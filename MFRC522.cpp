@@ -236,17 +236,16 @@ uint8_t MFRC522::commandCard(uint8_t cmd, uint8_t *data, uint8_t dlen, uint8_t *
   // Waiting for the command to complete so we can receive data.
   i = 25;	//According to the clock freq. adjustment, the max. wait time is 25ms.
   do {
-    //CommIrqReg[7..0]
+    //CommIRqReg[7..0]
     //Set1 TxIRq RxIRq IdleIRq HiAlerIRq LoAlertIRq ErrIRq TimerIRq
     delay(1);
     n = readFromRegister(CommIrqReg);
     i--;
   } while ((i!=0) && !(n&0x01) && !(n&waitIRq));
-
   clearBitMask(BitFramingReg, 0x80);			//StartSend=0
 
   if (i != 0) {
-    if(!(readFromRegister(ErrorReg) & 0x1B)) {   //BufferOvfl Collerr CRCErr ProtecolErr
+    if(!(readFromRegister(ErrorReg) & 0x1B)) {   //BufferOvfl Collerr CRCErr ProtocolErr
       status = MI_OK;
       if (n & irqEn & 0x01) {
         status = MI_NOTAGERR;
@@ -278,7 +277,6 @@ uint8_t MFRC522::commandCard(uint8_t cmd, uint8_t *data, uint8_t dlen, uint8_t *
       status = MI_ERR;
     }
   }
-
   return status;
 }
 
@@ -289,11 +287,11 @@ uint8_t MFRC522::commandCard(uint8_t cmd, uint8_t *data, uint8_t dlen, uint8_t *
  * Input parameters:
  *    mode - Request mode.
  *    type - Card type.
- *              0x4400 = Mifare_UltraLight
- *		0x0400 = Mifare_One(S50)
- *		0x0200 = Mifare_One(S70)
- *		0x0800 = Mifare_Pro(X)
- *		0x4403 = Mifare_DESFire
+ *           0x4400 = Mifare_UltraLight
+ *           0x0400 = Mifare_One(S50)
+ *	     0x0200 = Mifare_One(S70)
+ *	     0x0800 = Mifare_Pro(X)
+ *	     0x4403 = Mifare_DESFire
  * Return value: On success: MI_OK
  */
 uint8_t  MFRC522::requestCard(uint8_t mode, uint8_t *type) {
