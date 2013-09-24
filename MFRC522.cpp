@@ -78,13 +78,13 @@ void MFRC522::reset() {
 }
 
 void MFRC522::writeToRegister(uint8_t addr, uint8_t val) {
-	digitalWrite(_sad, LOW);
+  digitalWrite(_sad, LOW);
 
-	//Address format: 0XXXXXX0
-	SPI.transfer((addr<<1)&0x7E);
-	SPI.transfer(val);
+  //Address format: 0XXXXXX0
+  SPI.transfer((addr<<1)&0x7E);
+  SPI.transfer(val);
 
-	digitalWrite(_sad, HIGH);
+  digitalWrite(_sad, HIGH);
 }
 
 void MFRC522::antennaOn() {
@@ -284,7 +284,7 @@ uint8_t  MFRC522::requestCard(uint8_t mode, uint8_t *type) {
  * Description: Anti-collision detection, reading selected card serial number.
  * Input parameters:
  *    serial - returns 4 bytes card serial number,
-               the first 5 bytes for the checksum byte
+ *             the first 5 bytes for the checksum byte
  * Return value: the successful return MI_OK
  */
 uint8_t MFRC522::anticollision(uint8_t *serial) {
@@ -325,30 +325,29 @@ uint8_t MFRC522::anticollision(uint8_t *serial) {
  *    serial -- Card serial number, 4-byte
  * Return value: Returns MI_OK on success.
  */
-uint8_t MFRC522::authenticate(uint8_t mode, uint8_t block, uint8_t *key, uint8_t *serial)
-{
-    uint8_t status;
-    uint8_t result;
-    uint8_t i;
-    uint8_t buffer[12];
+uint8_t MFRC522::authenticate(uint8_t mode, uint8_t block, uint8_t *key, uint8_t *serial) {
+  uint8_t status;
+  uint8_t result;
+  uint8_t i;
+  uint8_t buffer[12];
 
-	//Verify the command block address + sector + password + card serial number
-    buffer[0] = mode;
-    buffer[1] = block;
-    for (i=0; i<6; i++) {
-      buffer[i+2] = *(key+i);
-    }
-    for (i=0; i<4; i++) {
-      buffer[i+8] = *(serial+i);
-    }
+  //Verify the command block address + sector + password + card serial number
+  buffer[0] = mode;
+  buffer[1] = block;
+  for (i=0; i<6; i++) {
+    buffer[i+2] = *(key+i);
+  }
+  for (i=0; i<4; i++) {
+    buffer[i+8] = *(serial+i);
+  }
 
-    status = commandCard(MFRC522_AUTHENT, buffer, 12, buffer, &result);
+  status = commandCard(MFRC522_AUTHENT, buffer, 12, buffer, &result);
 
-    if ((status != MI_OK) || (!(readFromRegister(Status2Reg) & 0x08))) {
-      status = MI_ERR;
-    }
+  if ((status != MI_OK) || (!(readFromRegister(Status2Reg) & 0x08))) {
+    status = MI_ERR;
+  }
 
-    return status;
+  return status;
 }
 
 /*
@@ -394,23 +393,23 @@ uint8_t MFRC522::writeToCard(uint8_t block, uint8_t *data) {
   calculateCRC(buffer, 2, &buffer[2]);
   status = commandCard(MFRC522_TRANSCEIVE, buffer, 4, buffer, &result);
 
+  if ((status != MI_OK) || (result != 4) || ((buffer[0] & 0x0F) != 0x0A)) {
+    status = MI_ERR;
+  }
+
+  if (status == MI_OK) {
+    for (i=0; i<16; i++) {
+      buffer[i] = *(data+i);
+    }
+    calculateCRC(buffer, 16, &buffer[16]);
+    status = commandCard(MFRC522_TRANSCEIVE, buffer, 18, buffer, &result);
+
     if ((status != MI_OK) || (result != 4) || ((buffer[0] & 0x0F) != 0x0A)) {
       status = MI_ERR;
     }
+  }
 
-    if (status == MI_OK) {
-      for (i=0; i<16; i++) {		//?FIFO?16Byte?? Datos a la FIFO 16Byte escribir
-        buffer[i] = *(data+i);
-      }
-      calculateCRC(buffer, 16, &buffer[16]);
-        status = commandCard(MFRC522_TRANSCEIVE, buffer, 18, buffer, &result);
-
-        if ((status != MI_OK) || (result != 4) || ((buffer[0] & 0x0F) != 0x0A)) {
-          status = MI_ERR;
-        }
-    }
-
-    return status;
+  return status;
 }
 
 /*

@@ -4,7 +4,7 @@
   Based on code Dr.Leong (WWW.B2CQSHOP.COM) and Miguel Balboa (circuitito.com).
 
   Created by Bjarte Johansen on 2013.09.23
- */
+*/
 /******************************************************************************/
 #include <Arduino.h>
 #include <SPI.h>
@@ -125,8 +125,7 @@
 #define     Reserved34	      	  0x3F
 //-----------------------------------------------
 
-class MFRC522
-{
+class MFRC522 {
  public:
   MFRC522(int sad, int reset);
 
