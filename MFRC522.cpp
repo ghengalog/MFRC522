@@ -121,7 +121,7 @@ void MFRC522::begin() {
   writeToRegister(TxAutoReg, 0x40);	        // 100%ASK
   writeToRegister(ModeReg, 0x3D);		// CRC initial value 0x6363
 
-  antennaOn();
+  setBitMask(TxControlReg, 0x03);               // Turn antenna on.
 }
 
 /**************************************************************************/
@@ -153,23 +153,6 @@ void MFRC522::writeToRegister(uint8_t addr, uint8_t val) {
   SPI.transfer(val);
 
   digitalWrite(_sad, HIGH);
-}
-
-/**************************************************************************/
-/*!
-
-  @brief   Writes a value to the TxControlReg to have the antenna turned
-           on.
-
- */
-/**************************************************************************/
-void MFRC522::antennaOn() {
-  uint8_t temp;
-
-  temp = readFromRegister(TxControlReg);
-  if (!(temp & 0x03)) {
-    setBitMask(TxControlReg, 0x03);
-  }
 }
 
 /**************************************************************************/
