@@ -55,15 +55,15 @@ uint8_t MFRC522::getFirmwareVersion() {
 }
 
 /*
- * Method name: cardCapacity
+ * Method name: selectTag
  * Description:
- *    election card, read the card memory capacity
+ *    Selects the tag.
  * Input parameters:
  *    serial - Incoming card serial number
  * Return value:
- *    returns the number of blocks on the card.
+ *    Returns SAK response.
  */
-uint8_t MFRC522::cardCapacity(uint8_t *serial) {
+uint8_t MFRC522::selectTag(uint8_t *serial) {
   uint8_t i;
   uint8_t status;
   uint8_t size;

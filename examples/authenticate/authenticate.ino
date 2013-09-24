@@ -32,7 +32,7 @@ void loop() {
   uint8_t status;
   uint8_t data[MAX_LEN];
   uint8_t serial[5];
-  uint8_t i, len;
+  uint8_t i, j;
 
   status = nfc.requestCard(MF_REQIDL, data);
 
@@ -52,7 +52,7 @@ void loop() {
     }
     Serial.println(serial[3], HEX);
 
-    //len = nfc.cardCapacity(serial);
+    nfc.selectTag(serial);
     for (i = 0; i < 64; i++) {
       status = nfc.authenticate(MF_AUTHENT1A, i, keyA, serial);
       if (status == MI_OK) {
