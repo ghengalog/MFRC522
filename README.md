@@ -10,7 +10,7 @@ MFRC522 doesn't have pin markings like the B2CQSHOP one):
 | 2    | SCK      |  13  |  52      |
 | 3    | MOSI     |  11  |  51      |
 | 4    | MISO     |  12  |  50      |
-| 5    | IRQ      |  *   |  *       |
+| 5    | IRQ      |  `*` |  `*`     |
 | 6    | GND      |  GND |  GND     |
 | 7    | RST      |  5   |  ?       |
 | 8    | +3.3V    |  3V3 |  3V3     |
