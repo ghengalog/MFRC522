@@ -456,6 +456,6 @@ void MFRC522::haltCard() {
   buffer[0] = MF_HALT;
   buffer[1] = 0;
   calculateCRC(buffer, 2, &buffer[2]);
-
+  clearBitMask(Status2Reg, 0x08); // turn off encryption
   status = commandCard(MFRC522_TRANSCEIVE, buffer, 4, buffer, &len);
 }
