@@ -123,11 +123,7 @@
 class MFRC522 {
  public:
   MFRC522(int sad, int reset);
-
-  bool isCard();
-  bool readCardSerial();
   uint8_t getFirmwareVersion();
-
   void begin();
   void reset();
   void writeToRegister(uint8_t addr, uint8_t val);

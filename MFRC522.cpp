@@ -22,31 +22,6 @@ MFRC522::MFRC522(int sad, int reset) {
   digitalWrite(_reset, HIGH);
 
 }
-/******************************************************************************
- * User API
- ******************************************************************************/
-
-bool MFRC522::isCard() {
-  uint8_t status;
-  uint8_t str[MAX_LEN];
-
-  status = requestCard(MF1_REQIDL, str);
-  if (status == MI_OK) {
-    return true;
-  } else {
-    return false;
-  }
-}
-
-bool MFRC522::readCardSerial() {
-  uint8_t status;
-  uint8_t serial[MAX_LEN];
-
-  // Anti-collision, sets card serial number. 4 bytes.
-  status = anticollision(serial);
-
-  return status == MI_OK;
-}
 
 uint8_t MFRC522::getFirmwareVersion() {
   uint8_t response;
