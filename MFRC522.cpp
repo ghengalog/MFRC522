@@ -30,7 +30,7 @@ bool MFRC522::isCard() {
   uint8_t status;
   uint8_t str[MAX_LEN];
 
-  status = requestCard(MF_REQIDL, str);
+  status = requestCard(MF1_REQIDL, str);
   if (status == MI_OK) {
     return true;
   } else {
@@ -70,7 +70,7 @@ uint8_t MFRC522::selectTag(uint8_t *serial) {
   uint8_t result;
   uint8_t buffer[9];
 
-  buffer[0] = MF_SElECTTAG;
+  buffer[0] = MF1_SELECTTAG;
   buffer[1] = 0x70;
   for (i=0; i<5; i++) {
     buffer[i+2] = *(serial+i);
@@ -325,7 +325,7 @@ uint8_t MFRC522::anticollision(uint8_t *serial) {
 
   writeToRegister(BitFramingReg, 0x00);		//TxLastBists = BitFramingReg[2..0]
 
-  serial[0] = MF_ANTICOLL;
+  serial[0] = MF1_ANTICOLL;
   serial[1] = 0x20;
   status = commandCard(MFRC522_TRANSCEIVE, serial, 2, serial, &len);
 
@@ -392,7 +392,7 @@ uint8_t MFRC522::readFromCard(uint8_t block, uint8_t *result) {
   uint8_t status;
   uint8_t len;
 
-  result[0] = MF_READ;
+  result[0] = MF1_READ;
   result[1] = block;
   calculateCRC(result, 2, &result[2]);
   status = commandCard(MFRC522_TRANSCEIVE, result, 4, result, &len);
@@ -418,7 +418,7 @@ uint8_t MFRC522::writeToCard(uint8_t block, uint8_t *data) {
   uint8_t i;
   uint8_t buffer[18];
 
-  buffer[0] = MF_WRITE;
+  buffer[0] = MF1_WRITE;
   buffer[1] = block;
   calculateCRC(buffer, 2, &buffer[2]);
   status = commandCard(MFRC522_TRANSCEIVE, buffer, 4, buffer, &result);
@@ -453,7 +453,7 @@ void MFRC522::haltCard() {
   uint8_t len;
   uint8_t buffer[4];
 
-  buffer[0] = MF_HALT;
+  buffer[0] = MF1_HALT;
   buffer[1] = 0;
   calculateCRC(buffer, 2, &buffer[2]);
   clearBitMask(Status2Reg, 0x08); // turn off encryption

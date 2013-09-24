@@ -34,25 +34,20 @@
 #define MFRC522_SOFTRESET         0x0F               //Reset
 
 // Mifare_One card command word
-# define MF_REQIDL          0x26               // find the antenna area does not enter hibernation
-# define MF_REQALL          0x52               // find all the cards antenna area
-# define MF_ANTICOLL        0x93               // anti-collision
-# define MF_SElECTTAG       0x93               // election card
-# define MF_AUTHENT1A       0x60               // authentication key A
-# define MF_AUTHENT1B       0x61               // authentication key B
-# define MF_READ            0x30               // Read Block
-# define MF_WRITE           0xA0               // write block
-# define MF_DECREMENT       0xC0               // debit
-# define MF_INCREMENT       0xC1               // recharge
-# define MF_RESTORE         0xC2               // transfer block data to the buffer
-# define MF_TRANSFER        0xB0               // save the data in the buffer
-# define MF_HALT            0x50               // Sleep
+# define MF1_REQIDL          0x26               // find the antenna area does not enter hibernation
+# define MF1_REQALL          0x52               // find all the cards antenna area
+# define MF1_ANTICOLL        0x93               // anti-collision
+# define MF1_SELECTTAG       0x93               // election card
+# define MF1_AUTHENT1A       0x60               // authentication key A
+# define MF1_AUTHENT1B       0x61               // authentication key B
+# define MF1_READ            0x30               // Read Block
+# define MF1_WRITE           0xA0               // write block
+# define MF1_DECREMENT       0xC0               // debit
+# define MF1_INCREMENT       0xC1               // recharge
+# define MF1_RESTORE         0xC2               // transfer block data to the buffer
+# define MF1_TRANSFER        0xB0               // save the data in the buffer
+# define MF1_HALT            0x50               // Sleep
 
-
-//And MF522 The error code is returned when communication
-#define MI_OK                 0
-#define MI_NOTAGERR           1
-#define MI_ERR                2
 
 //------------------ MFRC522 registers---------------
 //Page 0:Command and Status
