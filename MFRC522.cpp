@@ -1,28 +1,51 @@
-/*
- * MFRC522.cpp - Library to use ARDUINO RFID MODULE KIT 13.56 MHZ WITH TAGS SPI W AND R BY COOQROBOT.
- * Based on code Dr.Leong   ( WWW.B2CQSHOP.COM )
- * Created by Miguel Balboa, Jan, 2012.
- * Released into the public domain.
- *
+/**************************************************************************/
+/*!
+
+  @file    MFRC522.cpp
+  @author  Bjarte Johansen
+  @licence ljos.mit-license.org
+
+  SPI Driver for MFRC522 NFC/13.56 RFID Transceiver.
+  Based on code Dr.Leong ( WWW.B2CQSHOP.COM ) and Miguel Balboa.
+
  */
+/**************************************************************************/
 
-
-// Includes
 #include <Arduino.h>
 #include <MFRC522.h>
 
+/**************************************************************************/
+/*!
+
+  @brief Instantiates a new MFRC522 class.
+
+  @param sad    SPI chip select pin (CS/SS/SSEL)
+  @param reset  Not reset and power-down pin.
+
+ */
+/**************************************************************************/
 MFRC522::MFRC522(int sad, int reset) {
   _sad = sad;
-  pinMode(_sad, OUTPUT);                  // Set digital as OUTPUT to connect it to the RFID /ENABLE pin
+  pinMode(_sad, OUTPUT);         // Set digital as OUTPUT to connect it to the RFID /ENABLE pin
   digitalWrite(_sad, LOW);
 
 
   _reset = reset;
-  pinMode(_reset,OUTPUT);                 // Set digital pin, Not Reset and Power-down
+  pinMode(_reset, OUTPUT);       // Set digital pin, Not Reset and Power-Down
   digitalWrite(_reset, HIGH);
 
 }
 
+
+/**************************************************************************/
+/*!
+
+  @brief   Checks the firmware version of the chip.
+
+  @returns The firmware version of the MFRC522 chip.
+
+ */
+/**************************************************************************/
 uint8_t MFRC522::getFirmwareVersion() {
   uint8_t response;
   response = readFromRegister(VersionReg);
@@ -38,10 +61,22 @@ uint8_t MFRC522::getFirmwareVersion() {
  * Return value:
  *    Returns SAK response.
  */
+
+/**************************************************************************/
+/*!
+
+  @brief   Selects a tag for processing.
+
+  @param   serial  The serial number of the tag that is to be selected.
+
+  @returns The SAK response from the tag.
+
+ */
+/**************************************************************************/
 uint8_t MFRC522::selectTag(uint8_t *serial) {
   uint8_t i;
   uint8_t status;
-  uint8_t size;
+  uint8_t sak;
   uint8_t result;
   uint8_t buffer[9];
 
@@ -54,16 +89,22 @@ uint8_t MFRC522::selectTag(uint8_t *serial) {
   status = commandCard(MFRC522_TRANSCEIVE, buffer, 9, buffer, &result);
 
   if ((status == MI_OK) && (result == 0x18)) {
-    size = buffer[0];
+    sak = buffer[0];
   }
   else {
-    size = 0;
+    sak = 0;
   }
 
-  return size;
+  return sak;
 }
 
+/**************************************************************************/
+/*!
 
+  @brief   Does the setup for the MFRC522.
+
+ */
+/**************************************************************************/
 void MFRC522::begin() {
   digitalWrite(_sad, HIGH);
 
@@ -81,10 +122,27 @@ void MFRC522::begin() {
   antennaOn();
 }
 
+/**************************************************************************/
+/*!
+
+  @brief   Sends a SOFTRESET command to the MFRC522 chip.
+
+ */
+/**************************************************************************/
 void MFRC522::reset() {
   writeToRegister(CommandReg, MFRC522_SOFTRESET);
 }
 
+/**************************************************************************/
+/*!
+
+  @brief   Writes value to a register.
+
+  @param   addr  The address a register.
+  @param   val   The value to write to a register.
+
+ */
+/**************************************************************************/
 void MFRC522::writeToRegister(uint8_t addr, uint8_t val) {
   digitalWrite(_sad, LOW);
 
@@ -95,6 +153,14 @@ void MFRC522::writeToRegister(uint8_t addr, uint8_t val) {
   digitalWrite(_sad, HIGH);
 }
 
+/**************************************************************************/
+/*!
+
+  @brief   Writes a value to the TxControlReg to have the antenna turned
+           on.
+
+ */
+/**************************************************************************/
 void MFRC522::antennaOn() {
   uint8_t temp;
 
@@ -104,14 +170,17 @@ void MFRC522::antennaOn() {
   }
 }
 
-/*
- * Method name: readFromRegister
- * Description:
- *     Read a byte of data from a MFRC522-register.
- * Input Parameters:
- *     addr -- register address
- * Returns: a byte of data read from the register.
+/**************************************************************************/
+/*!
+
+  @brief   Reads the value at a register.
+
+  @param   addr  The address a register.
+
+  @returns The byte at the register.
+
  */
+/**************************************************************************/
 uint8_t MFRC522::readFromRegister(uint8_t addr) {
   uint8_t val;
   digitalWrite(_sad, LOW);
@@ -121,27 +190,51 @@ uint8_t MFRC522::readFromRegister(uint8_t addr) {
   return val;
 }
 
+
+/**************************************************************************/
+/*!
+
+  @brief   Adds a bitmask to a register.
+
+  @param   reg   The address a register.
+  @param   mask  The mask to update the register with.
+
+ */
+/**************************************************************************/
 void MFRC522::setBitMask(uint8_t reg, uint8_t mask) {
   uint8_t current;
   current = readFromRegister(reg);
   writeToRegister(reg, current | mask);
 }
 
+/**************************************************************************/
+/*!
+
+  @brief   Removes a bitmask from the register.
+
+  @param   reg   The address a register.
+  @param   mask  The mask to update the register with.
+
+ */
+/**************************************************************************/
 void MFRC522::clearBitMask(uint8_t reg, uint8_t mask) {
   uint8_t current;
   current = readFromRegister(reg);
   writeToRegister(reg, current & (~mask));
 }
 
-/*
- * Method name: calculateCRC
- * Description:
- *     Sends data to the MFRC522 to calculate the CRC value.
- * Input parameters:
- *     data   -- data to send to the MFRC522.
- *     len    -- length of the data.
- *     output -- Result from the CRC calculation.
+/**************************************************************************/
+/*!
+
+  @brief   Calculates the CRC value for some data that should be sent to
+           a tag.
+
+  @param   data    The data to calculate the value for.
+  @param   len     The length of the data.
+  @param   result  The result of the CRC calculation.
+
  */
+/**************************************************************************/
 void MFRC522::calculateCRC(uint8_t *data, uint8_t len, uint8_t *result) {
   uint8_t i, n;
 
@@ -166,6 +259,24 @@ void MFRC522::calculateCRC(uint8_t *data, uint8_t len, uint8_t *result) {
   result[1] = readFromRegister(CRCResultRegM);
 }
 
+/**************************************************************************/
+/*!
+
+  @brief   Sends a command to a tag.
+
+  @param   cmd     The command to the MFRC522 to send a command to the tag.
+  @param   data    The data that is needed to complete the command.
+  @param   dlen    The length of the data.
+  @param   result  The result returned by the tag.
+  @param   rlen    The length of the resulting data.
+
+  @returns Returns the status of the calculation.
+           MI_ERR        if something went wrong,
+           MI_NOTAGERR   if there was no tag to send the command to.
+           MI_OK         if everything went OK.
+
+ */
+/**************************************************************************/
 uint8_t MFRC522::commandCard(uint8_t cmd, uint8_t *data, uint8_t dlen, uint8_t *result, uint8_t *rlen) {
   uint8_t status = MI_ERR;
   uint8_t irqEn = 0x00;
@@ -255,20 +366,26 @@ uint8_t MFRC522::commandCard(uint8_t cmd, uint8_t *data, uint8_t dlen, uint8_t *
   return status;
 }
 
-/*
- * Function Name: requestCard
- * Description:
- *    Checks if there are any cards, returns card type.
- * Input parameters:
- *    mode - Request mode.
- *    type - Card type.
- *           0x4400 = Mifare_UltraLight
- *           0x0400 = Mifare_One(S50)
- *	     0x0200 = Mifare_One(S70)
- *	     0x0800 = Mifare_Pro(X)
- *	     0x4403 = Mifare_DESFire
- * Return value: On success: MI_OK
+/**************************************************************************/
+/*!
+
+  @brief   Checks to see if there is a card in the vicinity.
+
+  @param   mode  The mode we are requsting in.
+  @param   type  If we find a tag, this will be the type of that tag.
+                 0x4400 = Mifare_UltraLight
+                 0x0400 = Mifare_One(S50)
+                 0x0200 = Mifare_One(S70)
+                 0x0800 = Mifare_Pro(X)
+                 0x4403 = Mifare_DESFire
+
+  @returns Returns the status of the request.
+           MI_ERR        if something went wrong,
+           MI_NOTAGERR   if there was no tag to send the command to.
+           MI_OK         if everything went OK.
+
  */
+/**************************************************************************/
 uint8_t  MFRC522::requestCard(uint8_t mode, uint8_t *type) {
   uint8_t status;
   uint8_t result;			       //   The returned bits.
@@ -284,31 +401,40 @@ uint8_t  MFRC522::requestCard(uint8_t mode, uint8_t *type) {
   return status;
 }
 
-/*
- * Method name: anticollision
- * Description: Anti-collision detection, reading selected card serial number.
- * Input parameters:
- *    serial - returns 4 bytes card serial number,
- *             the first 5 bytes for the checksum byte
- * Return value: the successful return MI_OK
+/**************************************************************************/
+/*!
+
+  @brief   Handles collisions that might occur if there are multiple
+           tags available.
+
+  @param   serial  The
+
+  @returns Returns the status of the collision detection.
+           MI_ERR        if something went wrong,
+           MI_NOTAGERR   if there was no tag to send the command to.
+           MI_OK         if everything went OK.
+
  */
+/**************************************************************************/
 uint8_t MFRC522::anticollision(uint8_t *serial) {
   uint8_t status;
   uint8_t i;
   uint8_t check = 0;
   uint8_t len;
 
-  writeToRegister(BitFramingReg, 0x00);		//TxLastBists = BitFramingReg[2..0]
+  writeToRegister(BitFramingReg, 0x00);	     // TxLastBits = BitFramingReg[2..0]
 
   serial[0] = MF1_ANTICOLL;
   serial[1] = 0x20;
   status = commandCard(MFRC522_TRANSCEIVE, serial, 2, serial, &len);
 
   if (status == MI_OK) {
-    // Check card serial number.
+    // The checksum of the tag is the ^ of all the values.
     for (i=0; i<4; i++) {
       check ^= serial[i];
     }
+    // The checksum should be the same as the one provided from the
+    // tag (serial[4]).
     if (check != serial[i]) {
       status = MI_ERR;
     }
@@ -317,19 +443,22 @@ uint8_t MFRC522::anticollision(uint8_t *serial) {
   return status;
 }
 
-/*
- * Method name: authenticate
- * Description:
- *    Verify card password
- * Input parameters:
- *    mode   -- Password Authentication Mode
- *              KEY_A = Authentication Key A
- *              KEY_B = Authentication Key B
- *    block  -- Block address
- *    sector -- Sector password
- *    serial -- Card serial number, 4-byte
- * Return value: Returns MI_OK on success.
+/**************************************************************************/
+/*!
+
+  @brief   Handles the authentication between the tag and the reader.
+
+  @param   mode    What authentication key to use.
+  @param   block   The block that we want to read.
+  @param   key     The authentication key.
+  @param   serial  The serial of the tag.
+
+  @returns Returns the status of the collision detection.
+           MI_ERR        if something went wrong,
+           MI_OK         if everything went OK.
+
  */
+/**************************************************************************/
 uint8_t MFRC522::authenticate(uint8_t mode, uint8_t block, uint8_t *key, uint8_t *serial) {
   uint8_t status;
   uint8_t result;
@@ -355,14 +484,20 @@ uint8_t MFRC522::authenticate(uint8_t mode, uint8_t block, uint8_t *key, uint8_t
   return status;
 }
 
-/*
- * Method name: readFromCard
- * Description: Read block data
- * Input parameters:
- *     block  -- block address
- *     result -- read block data
- * Return value: the successful return MI_OK
+/**************************************************************************/
+/*!
+
+  @brief   Tries to read from the current (authenticated) tag.
+
+  @param   block   The block that we want to read.
+  @param   result  The resulting value returned from the tag.
+
+  @returns Returns the status of the collision detection.
+           MI_ERR        if something went wrong,
+           MI_OK         if everything went OK.
+
  */
+/**************************************************************************/
 uint8_t MFRC522::readFromCard(uint8_t block, uint8_t *result) {
   uint8_t status;
   uint8_t len;
@@ -379,14 +514,20 @@ uint8_t MFRC522::readFromCard(uint8_t block, uint8_t *result) {
   return status;
 }
 
-/*
- * Method name: writeToChar
- * Description: Write block data to card.
- * Input parameters:
- *     block - block address
- *     data  - 16 byte of data to write to the block on the card.
- * Return value: the successful return MI_OK
+/**************************************************************************/
+/*!
+
+  @brief   Tries to write to a block on the current tag.
+
+  @param   block  The block that we want to write to.
+  @param   data   The data that we shoudl write to the block.
+
+  @returns Returns the status of the collision detection.
+           MI_ERR        if something went wrong,
+           MI_OK         if everything went OK.
+
  */
+/**************************************************************************/
 uint8_t MFRC522::writeToCard(uint8_t block, uint8_t *data) {
   uint8_t status;
   uint8_t result;
@@ -417,12 +558,13 @@ uint8_t MFRC522::writeToCard(uint8_t block, uint8_t *data) {
   return status;
 }
 
-/*
- * Method name: halt
- * Description: Command card into hibernation
- * Input: None
- * Return value: None
+/**************************************************************************/
+/*!
+
+  @brief   Sends a halt command to the current tag.
+
  */
+/**************************************************************************/
 void MFRC522::haltCard() {
   uint8_t status;
   uint8_t len;
