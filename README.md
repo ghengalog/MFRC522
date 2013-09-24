@@ -1,5 +1,5 @@
 Arduino RFID Library for MFRC522 (13.56 Mhz)
-============================================
+--------------------------------------------
 
 Pin order, starting from the bottom left hand pin (in case your
 MFRC522 doesn't have pin markings like the B2CQSHOP one):
@@ -17,7 +17,7 @@ MFRC522 doesn't have pin markings like the B2CQSHOP one):
 `* Not needed`
 
 Using MFRC522 with other SPI components
-========================================
+---------------------------------------
 
 If you are planning to use other SPI components you just have to make
 sure each have an exclusive SS (Slave Select) line.  MISO, MOSI and
