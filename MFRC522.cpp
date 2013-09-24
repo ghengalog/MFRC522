@@ -1,5 +1,5 @@
 /*
- * RFID.cpp - Library to use ARDUINO RFID MODULE KIT 13.56 MHZ WITH TAGS SPI W AND R BY COOQROBOT.
+ * MFRC522.cpp - Library to use ARDUINO RFID MODULE KIT 13.56 MHZ WITH TAGS SPI W AND R BY COOQROBOT.
  * Based on code Dr.Leong   ( WWW.B2CQSHOP.COM )
  * Created by Miguel Balboa, Jan, 2012.
  * Released into the public domain.
@@ -42,7 +42,7 @@ bool MFRC522::readCardSerial() {
   uint8_t status;
   uint8_t serial[MAX_LEN];
 
-  // Anti-collision, returns card serial number. 4 bytes.
+  // Anti-collision, sets card serial number. 4 bytes.
   status = anticollision(serial);
   memcpy(_serial, serial, 5);
 
@@ -97,10 +97,12 @@ void MFRC522::antennaOn() {
 }
 
 /*
- *  Read_MFRC522 Nombre de la función: Read_MFRC522
- *  Descripción: Desde el MFRC522 leer un byte de un registro de datos
- *  Los parámetros de entrada: addr - la dirección de registro
- *  Valor de retorno: Devuelve un byte de datos de lectura
+ * Method name: readFromRegister
+ * Description:
+ *     Read a byte of data from a MFRC522-register.
+ * Input Parameters:
+ *     addr -- register address
+ * Returns: a byte of data read from the register.
  */
 uint8_t MFRC522::readFromRegister(uint8_t addr) {
   uint8_t val;
