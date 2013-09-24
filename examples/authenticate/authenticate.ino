@@ -94,5 +94,5 @@ void loop() {
 
     nfc.haltCard();
   }
-  delay(500);
+  delay(2000);
 }
