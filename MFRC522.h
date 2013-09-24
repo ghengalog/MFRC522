@@ -33,11 +33,11 @@
 #define     MFRC522_AUTHENT       0x0E      // Authentication Key
 #define     MFRC522_SOFTRESET     0x0F      // Reset
 
-// Mifare_One card command word
+// Mifare_One tag command word
 #define     MF1_REQIDL            0x26      // find the antenna area does not enter hibernation
-#define     MF1_REQALL            0x52      // find all the cards antenna area
+#define     MF1_REQALL            0x52      // find all the tags antenna area
 #define     MF1_ANTICOLL          0x93      // anti-collision
-#define     MF1_SELECTTAG         0x93      // election card
+#define     MF1_SELECTTAG         0x93      // election tag
 #define     MF1_AUTHENT1A         0x60      // authentication key A
 #define     MF1_AUTHENT1B         0x61      // authentication key B
 #define     MF1_READ              0x30      // Read Block
@@ -132,14 +132,14 @@ class MFRC522 {
   void setBitMask(uint8_t reg, uint8_t mask);
   void clearBitMask(uint8_t reg, uint8_t mask);
   void calculateCRC(uint8_t *pIndata, uint8_t len, uint8_t *pOutData);
-  uint8_t requestCard(uint8_t mode, uint8_t *type);
-  uint8_t commandCard(uint8_t command, uint8_t *sendData, uint8_t sendLen, uint8_t *backData, uint8_t *backLen);
+  uint8_t requestTag(uint8_t mode, uint8_t *type);
+  uint8_t commandTag(uint8_t command, uint8_t *sendData, uint8_t sendLen, uint8_t *backData, uint8_t *backLen);
   uint8_t anticollision(uint8_t *serial);
   uint8_t selectTag(uint8_t *serial);
   uint8_t authenticate(uint8_t mode, uint8_t block, uint8_t *key, uint8_t *serial);
-  uint8_t readFromCard(uint8_t blockAddr, uint8_t *recvData);
-  uint8_t writeToCard(uint8_t blockAddr, uint8_t *writeData);
-  void haltCard();
+  uint8_t readFromTag(uint8_t blockAddr, uint8_t *recvData);
+  uint8_t writeToTag(uint8_t blockAddr, uint8_t *writeData);
+  void haltTag();
 
  private:
   uint8_t _sad, _reset;

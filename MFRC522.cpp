@@ -59,7 +59,7 @@ uint8_t MFRC522::getFirmwareVersion() {
  * Description:
  *    Selects the tag.
  * Input parameters:
- *    serial - Incoming card serial number
+ *    serial - Incoming tag serial number
  * Return value:
  *    Returns SAK response.
  */
@@ -88,7 +88,7 @@ uint8_t MFRC522::selectTag(uint8_t *serial) {
     buffer[i+2] = *(serial+i);
   }
   calculateCRC(buffer, 7, &buffer[7]);
-  status = commandCard(MFRC522_TRANSCEIVE, buffer, 9, buffer, &result);
+  status = commandTag(MFRC522_TRANSCEIVE, buffer, 9, buffer, &result);
 
   if ((status == MI_OK) && (result == 0x18)) {
     sak = buffer[0];
@@ -279,7 +279,7 @@ void MFRC522::calculateCRC(uint8_t *data, uint8_t len, uint8_t *result) {
 
  */
 /**************************************************************************/
-uint8_t MFRC522::commandCard(uint8_t cmd, uint8_t *data, uint8_t dlen, uint8_t *result, uint8_t *rlen) {
+uint8_t MFRC522::commandTag(uint8_t cmd, uint8_t *data, uint8_t dlen, uint8_t *result, uint8_t *rlen) {
   uint8_t status = MI_ERR;
   uint8_t irqEn = 0x00;
   uint8_t waitIRq = 0x00;
@@ -305,10 +305,10 @@ uint8_t MFRC522::commandCard(uint8_t cmd, uint8_t *data, uint8_t dlen, uint8_t *
   }
 
   writeToRegister(CommIEnReg, irqEn|0x80);	// interrupt request
-  clearBitMask(CommIrqReg, 0x80);             // Clear all interrupt requests bits.
-  setBitMask(FIFOLevelReg, 0x80);             // FlushBuffer=1, FIFO initialization.
+  clearBitMask(CommIrqReg, 0x80);               // Clear all interrupt requests bits.
+  setBitMask(FIFOLevelReg, 0x80);               // FlushBuffer=1, FIFO initialization.
 
-  writeToRegister(CommandReg, MFRC522_IDLE);	//No action, cancel the current command.
+  writeToRegister(CommandReg, MFRC522_IDLE);	// No action, cancel the current command.
 
   // Write to FIFO
   for (i=0; i<dlen; i++) {
@@ -318,22 +318,23 @@ uint8_t MFRC522::commandCard(uint8_t cmd, uint8_t *data, uint8_t dlen, uint8_t *
   // Execute the command.
   writeToRegister(CommandReg, cmd);
   if (cmd == MFRC522_TRANSCEIVE) {
-    setBitMask(BitFramingReg, 0x80);		//StartSend=1, transmission of data starts
+    setBitMask(BitFramingReg, 0x80);		// StartSend=1, transmission of data starts
   }
 
   // Waiting for the command to complete so we can receive data.
-  i = 25;	//According to the clock freq. adjustment, the max. wait time is 25ms.
+  i = 25; // Max wait time is 25ms.
   do {
-    //CommIRqReg[7..0]
-    //Set1 TxIRq RxIRq IdleIRq HiAlerIRq LoAlertIRq ErrIRq TimerIRq
     delay(1);
+    // CommIRqReg[7..0]
+    // Set1 TxIRq RxIRq IdleIRq HiAlerIRq LoAlertIRq ErrIRq TimerIRq
     n = readFromRegister(CommIrqReg);
     i--;
   } while ((i!=0) && !(n&0x01) && !(n&waitIRq));
-  clearBitMask(BitFramingReg, 0x80);			//StartSend=0
+
+  clearBitMask(BitFramingReg, 0x80);	         // StartSend=0
 
   if (i != 0) {
-    if(!(readFromRegister(ErrorReg) & 0x1B)) {   //BufferOvfl Collerr CRCErr ProtocolErr
+    if(!(readFromRegister(ErrorReg) & 0x1B)) {   // BufferOvfl Collerr CRCErr ProtocolErr
       status = MI_OK;
       if (n & irqEn & 0x01) {
         status = MI_NOTAGERR;
@@ -356,7 +357,7 @@ uint8_t MFRC522::commandCard(uint8_t cmd, uint8_t *data, uint8_t dlen, uint8_t *
           n = MAX_LEN;
         }
 
-        // Reading the recieved data in FIFO.
+        // Reading the recieved data from FIFO.
         for (i=0; i<n; i++) {
           result[i] = readFromRegister(FIFODataReg);
         }
@@ -371,7 +372,7 @@ uint8_t MFRC522::commandCard(uint8_t cmd, uint8_t *data, uint8_t dlen, uint8_t *
 /**************************************************************************/
 /*!
 
-  @brief   Checks to see if there is a card in the vicinity.
+  @brief   Checks to see if there is a tag in the vicinity.
 
   @param   mode  The mode we are requsting in.
   @param   type  If we find a tag, this will be the type of that tag.
@@ -388,13 +389,13 @@ uint8_t MFRC522::commandCard(uint8_t cmd, uint8_t *data, uint8_t dlen, uint8_t *
 
  */
 /**************************************************************************/
-uint8_t  MFRC522::requestCard(uint8_t mode, uint8_t *type) {
+uint8_t  MFRC522::requestTag(uint8_t mode, uint8_t *type) {
   uint8_t status;
-  uint8_t result;			       //   The returned bits.
+  uint8_t result;			 // The returned bits.
   writeToRegister(BitFramingReg, 0x07);  // TxLastBists = BitFramingReg[2..0]
 
   type[0] = mode;
-  status = commandCard(MFRC522_TRANSCEIVE, type, 1, type, &result);
+  status = commandTag(MFRC522_TRANSCEIVE, type, 1, type, &result);
 
   if ((status != MI_OK) || (result != 0x10)) {
     status = MI_ERR;
@@ -428,7 +429,7 @@ uint8_t MFRC522::anticollision(uint8_t *serial) {
 
   serial[0] = MF1_ANTICOLL;
   serial[1] = 0x20;
-  status = commandCard(MFRC522_TRANSCEIVE, serial, 2, serial, &len);
+  status = commandTag(MFRC522_TRANSCEIVE, serial, 2, serial, &len);
 
   if (status == MI_OK) {
     // The checksum of the tag is the ^ of all the values.
@@ -467,7 +468,7 @@ uint8_t MFRC522::authenticate(uint8_t mode, uint8_t block, uint8_t *key, uint8_t
   uint8_t i;
   uint8_t buffer[12];
 
-  //Verify the command block address + sector + password + card serial number
+  //Verify the command block address + sector + password + tag serial number
   buffer[0] = mode;
   buffer[1] = block;
   for (i=0; i<6; i++) {
@@ -477,7 +478,7 @@ uint8_t MFRC522::authenticate(uint8_t mode, uint8_t block, uint8_t *key, uint8_t
     buffer[i+8] = *(serial+i);
   }
 
-  status = commandCard(MFRC522_AUTHENT, buffer, 12, buffer, &result);
+  status = commandTag(MFRC522_AUTHENT, buffer, 12, buffer, &result);
 
   if ((status != MI_OK) || (!(readFromRegister(Status2Reg) & 0x08))) {
     status = MI_ERR;
@@ -500,14 +501,14 @@ uint8_t MFRC522::authenticate(uint8_t mode, uint8_t block, uint8_t *key, uint8_t
 
  */
 /**************************************************************************/
-uint8_t MFRC522::readFromCard(uint8_t block, uint8_t *result) {
+uint8_t MFRC522::readFromTag(uint8_t block, uint8_t *result) {
   uint8_t status;
   uint8_t len;
 
   result[0] = MF1_READ;
   result[1] = block;
   calculateCRC(result, 2, &result[2]);
-  status = commandCard(MFRC522_TRANSCEIVE, result, 4, result, &len);
+  status = commandTag(MFRC522_TRANSCEIVE, result, 4, result, &len);
 
   if ((status != MI_OK) || (len != 0x90)) {
     status = MI_ERR;
@@ -530,7 +531,7 @@ uint8_t MFRC522::readFromCard(uint8_t block, uint8_t *result) {
 
  */
 /**************************************************************************/
-uint8_t MFRC522::writeToCard(uint8_t block, uint8_t *data) {
+uint8_t MFRC522::writeToTag(uint8_t block, uint8_t *data) {
   uint8_t status;
   uint8_t result;
   uint8_t i;
@@ -539,7 +540,7 @@ uint8_t MFRC522::writeToCard(uint8_t block, uint8_t *data) {
   buffer[0] = MF1_WRITE;
   buffer[1] = block;
   calculateCRC(buffer, 2, &buffer[2]);
-  status = commandCard(MFRC522_TRANSCEIVE, buffer, 4, buffer, &result);
+  status = commandTag(MFRC522_TRANSCEIVE, buffer, 4, buffer, &result);
 
   if ((status != MI_OK) || (result != 4) || ((buffer[0] & 0x0F) != 0x0A)) {
     status = MI_ERR;
@@ -550,7 +551,7 @@ uint8_t MFRC522::writeToCard(uint8_t block, uint8_t *data) {
       buffer[i] = *(data+i);
     }
     calculateCRC(buffer, 16, &buffer[16]);
-    status = commandCard(MFRC522_TRANSCEIVE, buffer, 18, buffer, &result);
+    status = commandTag(MFRC522_TRANSCEIVE, buffer, 18, buffer, &result);
 
     if ((status != MI_OK) || (result != 4) || ((buffer[0] & 0x0F) != 0x0A)) {
       status = MI_ERR;
@@ -567,7 +568,7 @@ uint8_t MFRC522::writeToCard(uint8_t block, uint8_t *data) {
 
  */
 /**************************************************************************/
-void MFRC522::haltCard() {
+void MFRC522::haltTag() {
   uint8_t status;
   uint8_t len;
   uint8_t buffer[4];
@@ -576,5 +577,5 @@ void MFRC522::haltCard() {
   buffer[1] = 0;
   calculateCRC(buffer, 2, &buffer[2]);
   clearBitMask(Status2Reg, 0x08); // turn off encryption
-  status = commandCard(MFRC522_TRANSCEIVE, buffer, 4, buffer, &len);
+  status = commandTag(MFRC522_TRANSCEIVE, buffer, 4, buffer, &len);
 }

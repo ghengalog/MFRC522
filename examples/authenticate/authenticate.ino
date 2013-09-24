@@ -34,10 +34,10 @@ void loop() {
   uint8_t serial[5];
   uint8_t i, j;
 
-  status = nfc.requestCard(MF_REQIDL, data);
+  status = nfc.requestTag(MF_REQIDL, data);
 
   if (status == MI_OK) {
-    Serial.println("Card detected.");
+    Serial.println("Tag detected.");
     Serial.print("Type: ");
     Serial.print(data[0], HEX);
     Serial.println(data[1], HEX);
@@ -45,7 +45,7 @@ void loop() {
     status = nfc.anticollision(data);
     memcpy(serial, data, 5);
 
-    Serial.println("The serial nb of the card is:");
+    Serial.println("The serial nb of the tag is:");
     for (i = 0; i < 3; i++) {
       Serial.print(serial[i], HEX);
       Serial.print(", ");
@@ -59,7 +59,7 @@ void loop() {
         Serial.print("Authenticated block nb. 0x");
         Serial.print(i, HEX);
         Serial.println(" with key A.");
-        status = nfc.readFromCard(i, data);
+        status = nfc.readFromTag(i, data);
         if (status == MI_OK) {
           for (j = 0; j < 15; j++) {
             Serial.print(data[j], HEX);
@@ -75,7 +75,7 @@ void loop() {
           Serial.print("Authenticated block nb. 0x");
           Serial.print(i, HEX);
           Serial.println(" with key B.");
-          status = nfc.readFromCard(i, data);
+          status = nfc.readFromTag(i, data);
           if (status == MI_OK) {
             for (j = 0; j < 15; j++) {
               Serial.print(data[j], HEX);
@@ -92,7 +92,7 @@ void loop() {
       }
     }
 
-    nfc.haltCard();
+    nfc.haltTag();
   }
   delay(2000);
 }

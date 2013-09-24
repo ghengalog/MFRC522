@@ -11,8 +11,6 @@ MFRC522 KEYWORD1
 #######################################
 # Methods and Functions (KEYWORD2)
 #######################################
-isCard KEYWORD2
-readCardSerial KEYWORD2
 getFirmwareVersion KEYWORD2
 begin KEYWORD2
 reset KEYWORD2
@@ -22,14 +20,14 @@ readFromRegister KEYWORD2
 setBitMask KEYWORD2
 clearBitMask KEYWORD2
 calculateCRC KEYWORD2
-requestCard KEYWORD2
-commandCard KEYWORD2
+requestTag KEYWORD2
+commandTag KEYWORD2
 anticollision KEYWORD2
 selectTag KEYWORD2
 authenticate KEYWORD2
-readFromCard KEYWORD2
-writeToCard KEYWORD2
-haltCard KEYWORD2
+readFromTag KEYWORD2
+writeToTag KEYWORD2
+haltTag KEYWORD2
 
 
 #######################################
