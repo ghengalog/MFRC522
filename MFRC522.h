@@ -123,18 +123,17 @@
 class MFRC522 {
  public:
   MFRC522(int sad, int reset);
-  uint8_t getFirmwareVersion();
-  void begin();
-  void reset();
   void writeToRegister(uint8_t addr, uint8_t val);
-  void antennaOn(void);
   uint8_t readFromRegister(uint8_t addr);
   void setBitMask(uint8_t reg, uint8_t mask);
   void clearBitMask(uint8_t reg, uint8_t mask);
-  void calculateCRC(uint8_t *pIndata, uint8_t len, uint8_t *pOutData);
-  uint8_t requestTag(uint8_t mode, uint8_t *type);
+  void begin();
+  void reset();
+  uint8_t getFirmwareVersion();
   uint8_t commandTag(uint8_t command, uint8_t *sendData, uint8_t sendLen, uint8_t *backData, uint8_t *backLen);
-  uint8_t anticollision(uint8_t *serial);
+  uint8_t requestTag(uint8_t mode, uint8_t *type);
+  uint8_t antiCollision(uint8_t *serial);
+  void calculateCRC(uint8_t *pIndata, uint8_t len, uint8_t *pOutData);
   uint8_t selectTag(uint8_t *serial);
   uint8_t authenticate(uint8_t mode, uint8_t block, uint8_t *key, uint8_t *serial);
   uint8_t readFromTag(uint8_t blockAddr, uint8_t *recvData);

@@ -42,7 +42,7 @@ void loop() {
     Serial.print(data[0], HEX);
     Serial.println(data[1], HEX);
 
-    status = nfc.anticollision(data);
+    status = nfc.antiCollision(data);
     memcpy(serial, data, 5);
 
     Serial.println("The serial nb of the tag is:");

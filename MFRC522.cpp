@@ -38,103 +38,6 @@ MFRC522::MFRC522(int sad, int reset) {
 
 }
 
-
-/**************************************************************************/
-/*!
-
-  @brief   Checks the firmware version of the chip.
-
-  @returns The firmware version of the MFRC522 chip.
-
- */
-/**************************************************************************/
-uint8_t MFRC522::getFirmwareVersion() {
-  uint8_t response;
-  response = readFromRegister(VersionReg);
-  return response;
-}
-
-/*
- * Method name: selectTag
- * Description:
- *    Selects the tag.
- * Input parameters:
- *    serial - Incoming tag serial number
- * Return value:
- *    Returns SAK response.
- */
-
-/**************************************************************************/
-/*!
-
-  @brief   Selects a tag for processing.
-
-  @param   serial  The serial number of the tag that is to be selected.
-
-  @returns The SAK response from the tag.
-
- */
-/**************************************************************************/
-uint8_t MFRC522::selectTag(uint8_t *serial) {
-  uint8_t i;
-  uint8_t status;
-  uint8_t sak;
-  uint8_t result;
-  uint8_t buffer[9];
-
-  buffer[0] = MF1_SELECTTAG;
-  buffer[1] = 0x70;
-  for (i=0; i<5; i++) {
-    buffer[i+2] = *(serial+i);
-  }
-  calculateCRC(buffer, 7, &buffer[7]);
-  status = commandTag(MFRC522_TRANSCEIVE, buffer, 9, buffer, &result);
-
-  if ((status == MI_OK) && (result == 0x18)) {
-    sak = buffer[0];
-  }
-  else {
-    sak = 0;
-  }
-
-  return sak;
-}
-
-/**************************************************************************/
-/*!
-
-  @brief   Does the setup for the MFRC522.
-
- */
-/**************************************************************************/
-void MFRC522::begin() {
-  digitalWrite(_sad, HIGH);
-
-  reset();
-
-  //Timer: TPrescaler*TreloadVal/6.78MHz = 24ms
-  writeToRegister(TModeReg, 0x8D);		// Tauto=1; f(Timer) = 6.78MHz/TPreScaler
-  writeToRegister(TPrescalerReg, 0x3E);         // TModeReg[3..0] + TPrescalerReg
-  writeToRegister(TReloadRegL, 30);
-  writeToRegister(TReloadRegH, 0);
-
-  writeToRegister(TxAutoReg, 0x40);	        // 100%ASK
-  writeToRegister(ModeReg, 0x3D);		// CRC initial value 0x6363
-
-  setBitMask(TxControlReg, 0x03);               // Turn antenna on.
-}
-
-/**************************************************************************/
-/*!
-
-  @brief   Sends a SOFTRESET command to the MFRC522 chip.
-
- */
-/**************************************************************************/
-void MFRC522::reset() {
-  writeToRegister(CommandReg, MFRC522_SOFTRESET);
-}
-
 /**************************************************************************/
 /*!
 
@@ -175,7 +78,6 @@ uint8_t MFRC522::readFromRegister(uint8_t addr) {
   return val;
 }
 
-
 /**************************************************************************/
 /*!
 
@@ -211,37 +113,51 @@ void MFRC522::clearBitMask(uint8_t reg, uint8_t mask) {
 /**************************************************************************/
 /*!
 
-  @brief   Calculates the CRC value for some data that should be sent to
-           a tag.
-
-  @param   data    The data to calculate the value for.
-  @param   len     The length of the data.
-  @param   result  The result of the CRC calculation.
+  @brief   Does the setup for the MFRC522.
 
  */
 /**************************************************************************/
-void MFRC522::calculateCRC(uint8_t *data, uint8_t len, uint8_t *result) {
-  uint8_t i, n;
+void MFRC522::begin() {
+  digitalWrite(_sad, HIGH);
 
-  clearBitMask(DivIrqReg, 0x04);			// CRCIrq = 0
-  setBitMask(FIFOLevelReg, 0x80);			// Clear the FIFO pointer
+  reset();
 
-  //Writing data to the FIFO.
-  for (i=0; i<len; i++) {
-    writeToRegister(FIFODataReg, *(data+i));
-  }
-  writeToRegister(CommandReg, MFRC522_CALCCRC);
+  //Timer: TPrescaler*TreloadVal/6.78MHz = 24ms
+  writeToRegister(TModeReg, 0x8D);		// Tauto=1; f(Timer) = 6.78MHz/TPreScaler
+  writeToRegister(TPrescalerReg, 0x3E);         // TModeReg[3..0] + TPrescalerReg
+  writeToRegister(TReloadRegL, 30);
+  writeToRegister(TReloadRegH, 0);
 
-  // Wait for the CRC calculation to complete.
-  i = 0xFF;
-  do {
-    n = readFromRegister(DivIrqReg);
-    i--;
-  } while ((i!=0) && !(n&0x04));			//CRCIrq = 1
+  writeToRegister(TxAutoReg, 0x40);	        // 100%ASK
+  writeToRegister(ModeReg, 0x3D);		// CRC initial value 0x6363
 
-  // Read the result from the CRC calculation.
-  result[0] = readFromRegister(CRCResultRegL);
-  result[1] = readFromRegister(CRCResultRegM);
+  setBitMask(TxControlReg, 0x03);               // Turn antenna on.
+}
+
+/**************************************************************************/
+/*!
+
+  @brief   Sends a SOFTRESET command to the MFRC522 chip.
+
+ */
+/**************************************************************************/
+void MFRC522::reset() {
+  writeToRegister(CommandReg, MFRC522_SOFTRESET);
+}
+
+/**************************************************************************/
+/*!
+
+  @brief   Checks the firmware version of the chip.
+
+  @returns The firmware version of the MFRC522 chip.
+
+ */
+/**************************************************************************/
+uint8_t MFRC522::getFirmwareVersion() {
+  uint8_t response;
+  response = readFromRegister(VersionReg);
+  return response;
 }
 
 /**************************************************************************/
@@ -393,7 +309,7 @@ uint8_t  MFRC522::requestTag(uint8_t mode, uint8_t *type) {
   @brief   Handles collisions that might occur if there are multiple
            tags available.
 
-  @param   serial  The
+  @param   serial  The serial nb of the tag.
 
   @returns Returns the status of the collision detection.
            MI_ERR        if something went wrong,
@@ -402,7 +318,7 @@ uint8_t  MFRC522::requestTag(uint8_t mode, uint8_t *type) {
 
  */
 /**************************************************************************/
-uint8_t MFRC522::anticollision(uint8_t *serial) {
+uint8_t MFRC522::antiCollision(uint8_t *serial) {
   uint8_t status;
   uint8_t i;
   uint8_t check = 0;
@@ -427,6 +343,78 @@ uint8_t MFRC522::anticollision(uint8_t *serial) {
   }
 
   return status;
+}
+
+/**************************************************************************/
+/*!
+
+  @brief   Calculates the CRC value for some data that should be sent to
+           a tag.
+
+  @param   data    The data to calculate the value for.
+  @param   len     The length of the data.
+  @param   result  The result of the CRC calculation.
+
+ */
+/**************************************************************************/
+void MFRC522::calculateCRC(uint8_t *data, uint8_t len, uint8_t *result) {
+  uint8_t i, n;
+
+  clearBitMask(DivIrqReg, 0x04);			// CRCIrq = 0
+  setBitMask(FIFOLevelReg, 0x80);			// Clear the FIFO pointer
+
+  //Writing data to the FIFO.
+  for (i=0; i<len; i++) {
+    writeToRegister(FIFODataReg, *(data+i));
+  }
+  writeToRegister(CommandReg, MFRC522_CALCCRC);
+
+  // Wait for the CRC calculation to complete.
+  i = 0xFF;
+  do {
+    n = readFromRegister(DivIrqReg);
+    i--;
+  } while ((i!=0) && !(n&0x04));			//CRCIrq = 1
+
+  // Read the result from the CRC calculation.
+  result[0] = readFromRegister(CRCResultRegL);
+  result[1] = readFromRegister(CRCResultRegM);
+}
+
+/**************************************************************************/
+/*!
+
+  @brief   Selects a tag for processing.
+
+  @param   serial  The serial number of the tag that is to be selected.
+
+  @returns The SAK response from the tag.
+
+ */
+/**************************************************************************/
+uint8_t MFRC522::selectTag(uint8_t *serial) {
+  uint8_t i;
+  uint8_t status;
+  uint8_t sak;
+  uint8_t result;
+  uint8_t buffer[9];
+
+  buffer[0] = MF1_SELECTTAG;
+  buffer[1] = 0x70;
+  for (i=0; i<5; i++) {
+    buffer[i+2] = *(serial+i);
+  }
+  calculateCRC(buffer, 7, &buffer[7]);
+  status = commandTag(MFRC522_TRANSCEIVE, buffer, 9, buffer, &result);
+
+  if ((status == MI_OK) && (result == 0x18)) {
+    sak = buffer[0];
+  }
+  else {
+    sak = 0;
+  }
+
+  return sak;
 }
 
 /**************************************************************************/
