@@ -1,52 +1,52 @@
 /******************************************************************************/
 /*!
-  MFRC522.h - Library to use ARDUINO RFID MODULE KIT 13.56 MHZ WITH TAGS SPI W AND R BY COOQROBOT.
-  Based on code Dr.Leong (WWW.B2CQSHOP.COM) and Miguel Balboa (circuitito.com).
+  @file    MFRC522.h
+  @author  Bjarte Johansen
+  @licence ljos.mit-license.org
 
-  Created by Bjarte Johansen on 2013.09.23
+  SPI Driver for MFRC522 NFC/13.56 RFID Transceiver.
+
+  Based on code by Dr.Leong ( WWW.B2CQSHOP.COM ) and
+  Miguel Balboa (https://github.com/miguelbalboa/rfid).
 */
 /******************************************************************************/
+
 #include <Arduino.h>
 #include <SPI.h>
 
-
-
-/******************************************************************************
- * Definitions
- ******************************************************************************/
-#define MAX_LEN 16   // Maximum length of an array.
+#define     MAX_LEN               16        // Maximum length of an array.
 
 // MF522 MFRC522 error codes.
-#define MI_OK                 0
-#define MI_NOTAGERR           1
-#define MI_ERR                2
+#define     MI_OK                 0         // Everything A-OK.
+#define     MI_NOTAGERR           1         // No tag error
+#define     MI_ERR                2         // General error
 
 // MF522 Command word
-#define MFRC522_IDLE              0x00               //NO action; Cancel the current command
-#define MFRC522_MEM               0x01               //Store 25 byte into the internal buffer.
-#define MFRC522_GENID             0x02               //Generates a 10 byte random ID number.
-#define MFRC522_CALCCRC           0x03               //CRC Calculate or selftest.
-#define MFRC522_TRANSMIT          0x04               //Transmit data
-#define MFRC522_NOCMDCH           0x07               //No command change.
-#define MFRC522_RECEIVE           0x08               //Receive Data
-#define MFRC522_TRANSCEIVE        0x0C               //Transmit and receive data,
-#define MFRC522_AUTHENT           0x0E               //Authentication Key
-#define MFRC522_SOFTRESET         0x0F               //Reset
+#define     MFRC522_IDLE          0x00      // NO action; Cancel the current command
+#define     MFRC522_MEM           0x01      // Store 25 byte into the internal buffer.
+#define     MFRC522_GENID         0x02      // Generates a 10 byte random ID number.
+#define     MFRC522_CALCCRC       0x03      // CRC Calculate or selftest.
+#define     MFRC522_TRANSMIT      0x04      // Transmit data
+#define     MFRC522_NOCMDCH       0x07      // No command change.
+#define     MFRC522_RECEIVE       0x08      // Receive Data
+#define     MFRC522_TRANSCEIVE    0x0C      // Transmit and receive data,
+#define     MFRC522_AUTHENT       0x0E      // Authentication Key
+#define     MFRC522_SOFTRESET     0x0F      // Reset
 
 // Mifare_One card command word
-# define MF1_REQIDL          0x26               // find the antenna area does not enter hibernation
-# define MF1_REQALL          0x52               // find all the cards antenna area
-# define MF1_ANTICOLL        0x93               // anti-collision
-# define MF1_SELECTTAG       0x93               // election card
-# define MF1_AUTHENT1A       0x60               // authentication key A
-# define MF1_AUTHENT1B       0x61               // authentication key B
-# define MF1_READ            0x30               // Read Block
-# define MF1_WRITE           0xA0               // write block
-# define MF1_DECREMENT       0xC0               // debit
-# define MF1_INCREMENT       0xC1               // recharge
-# define MF1_RESTORE         0xC2               // transfer block data to the buffer
-# define MF1_TRANSFER        0xB0               // save the data in the buffer
-# define MF1_HALT            0x50               // Sleep
+#define     MF1_REQIDL            0x26      // find the antenna area does not enter hibernation
+#define     MF1_REQALL            0x52      // find all the cards antenna area
+#define     MF1_ANTICOLL          0x93      // anti-collision
+#define     MF1_SELECTTAG         0x93      // election card
+#define     MF1_AUTHENT1A         0x60      // authentication key A
+#define     MF1_AUTHENT1B         0x61      // authentication key B
+#define     MF1_READ              0x30      // Read Block
+#define     MF1_WRITE             0xA0      // write block
+#define     MF1_DECREMENT         0xC0      // debit
+#define     MF1_INCREMENT         0xC1      // recharge
+#define     MF1_RESTORE           0xC2      // transfer block data to the buffer
+#define     MF1_TRANSFER          0xB0      // save the data in the buffer
+#define     MF1_HALT              0x50      // Sleep
 
 
 //------------------ MFRC522 registers---------------

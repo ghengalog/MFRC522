@@ -6,7 +6,9 @@
   @licence ljos.mit-license.org
 
   SPI Driver for MFRC522 NFC/13.56 RFID Transceiver.
-  Based on code Dr.Leong ( WWW.B2CQSHOP.COM ) and Miguel Balboa.
+
+  Based on code by Dr.Leong ( WWW.B2CQSHOP.COM ) and
+  Miguel Balboa (https://github.com/miguelbalboa/rfid).
 
  */
 /**************************************************************************/
