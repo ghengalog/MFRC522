@@ -44,7 +44,6 @@ bool MFRC522::readCardSerial() {
 
   // Anti-collision, sets card serial number. 4 bytes.
   status = anticollision(serial);
-  memcpy(_serial, serial, 5);
 
   return status == MI_OK;
 }
@@ -53,6 +52,40 @@ uint8_t MFRC522::getFirmwareVersion() {
   uint8_t response;
   response = readFromRegister(VersionReg);
   return response;
+}
+
+/*
+ * Method name: cardCapacity
+ * Description:
+ *    election card, read the card memory capacity
+ * Input parameters:
+ *    serial - Incoming card serial number
+ * Return value:
+ *    returns the number of blocks on the card.
+ */
+uint8_t MFRC522::cardCapacity(uint8_t *serial) {
+  uint8_t i;
+  uint8_t status;
+  uint8_t size;
+  uint8_t result;
+  uint8_t buffer[9];
+
+  buffer[0] = MF_SElECTTAG;
+  buffer[1] = 0x70;
+  for (i=0; i<5; i++) {
+    buffer[i+2] = *(serial+i);
+  }
+  calculateCRC(buffer, 7, &buffer[7]);
+  status = commandCard(MFRC522_TRANSCEIVE, buffer, 9, buffer, &result);
+
+  if ((status == MI_OK) && (result == 0x18)) {
+    size = buffer[0];
+  }
+  else {
+    size = 0;
+  }
+
+  return size;
 }
 
 
@@ -266,7 +299,6 @@ uint8_t MFRC522::commandCard(uint8_t cmd, uint8_t *data, uint8_t dlen, uint8_t *
 uint8_t  MFRC522::requestCard(uint8_t mode, uint8_t *type) {
   uint8_t status;
   uint8_t result;			       //   The returned bits.
-
   writeToRegister(BitFramingReg, 0x07);  // TxLastBists = BitFramingReg[2..0]
 
   type[0] = mode;
@@ -418,7 +450,7 @@ uint8_t MFRC522::writeToCard(uint8_t block, uint8_t *data) {
  * Input: None
  * Return value: None
  */
-void MFRC522::halt() {
+void MFRC522::haltCard() {
   uint8_t status;
   uint8_t len;
   uint8_t buffer[4];
