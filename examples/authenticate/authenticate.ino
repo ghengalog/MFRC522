@@ -59,12 +59,32 @@ void loop() {
         Serial.print("Authenticated block nb. 0x");
         Serial.print(i, HEX);
         Serial.println(" with key A.");
+        status = nfc.readFromCard(i, data);
+        if (status == MI_OK) {
+          for (j = 0; j < 15; j++) {
+            Serial.print(data[j], HEX);
+            Serial.print(", ");
+          }
+          Serial.println(data[15], HEX);
+        } else {
+          Serial.println("Read failed.");
+        }
       } else {
         status = nfc.authenticate(MF_AUTHENT1B, i, keyB, serial);
         if (status == MI_OK) {
           Serial.print("Authenticated block nb. 0x");
           Serial.print(i, HEX);
           Serial.println(" with key B.");
+          status = nfc.readFromCard(i, data);
+          if (status == MI_OK) {
+            for (j = 0; j < 15; j++) {
+              Serial.print(data[j], HEX);
+              Serial.print(", ");
+            }
+            Serial.println(data[15], HEX);
+          } else {
+            Serial.println("Read failed.");
+          }
         } else {
           Serial.print("Access denied at block nb. 0x");
           Serial.println(i, HEX);
