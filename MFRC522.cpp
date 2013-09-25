@@ -182,23 +182,18 @@ int MFRC522::commandTag(byte cmd, byte *data, int dlen, byte *result, int *rlen)
   int status = MI_ERR;
   byte irqEn = 0x00;
   byte waitIRq = 0x00;
-  byte lastBits;
-  byte n;
+  byte lastBits, n;
   int i;
 
   switch (cmd) {
   case MFRC522_AUTHENT:
-    {
-      irqEn = 0x12;
-      waitIRq = 0x10;
-      break;
-    }
+    irqEn = 0x12;
+    waitIRq = 0x10;
+    break;
   case MFRC522_TRANSCEIVE:
-    {
-      irqEn = 0x77;
-      waitIRq = 0x30;
-      break;
-    }
+    irqEn = 0x77;
+    waitIRq = 0x30;
+    break;
   default:
     break;
   }
@@ -232,7 +227,7 @@ int MFRC522::commandTag(byte cmd, byte *data, int dlen, byte *result, int *rlen)
 
   clearBitMask(BitFramingReg, 0x80);	         // StartSend=0
 
-  if (i != 0) {
+  if (i != 0) { // Request did not time out.
     if(!(readFromRegister(ErrorReg) & 0x1B)) {   // BufferOvfl Collerr CRCErr ProtocolErr
       status = MI_OK;
       if (n & irqEn & 0x01) {
