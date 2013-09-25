@@ -34,7 +34,7 @@ void loop() {
   uint8_t serial[5];
   uint8_t i, j;
 
-  status = nfc.requestTag(MF_REQIDL, data);
+  status = nfc.requestTag(MF1_REQIDL, data);
 
   if (status == MI_OK) {
     Serial.println("Tag detected.");
@@ -54,7 +54,7 @@ void loop() {
 
     nfc.selectTag(serial);
     for (i = 0; i < 64; i++) {
-      status = nfc.authenticate(MF_AUTHENT1A, i, keyA, serial);
+      status = nfc.authenticate(MF1_AUTHENT1A, i, keyA, serial);
       if (status == MI_OK) {
         Serial.print("Authenticated block nb. 0x");
         Serial.print(i, HEX);
@@ -70,7 +70,7 @@ void loop() {
           Serial.println("Read failed.");
         }
       } else {
-        status = nfc.authenticate(MF_AUTHENT1B, i, keyB, serial);
+        status = nfc.authenticate(MF1_AUTHENT1B, i, keyB, serial);
         if (status == MI_OK) {
           Serial.print("Authenticated block nb. 0x");
           Serial.print(i, HEX);

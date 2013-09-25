@@ -123,23 +123,23 @@
 class MFRC522 {
  public:
   MFRC522(int sad, int reset);
-  void writeToRegister(uint8_t addr, uint8_t val);
-  uint8_t readFromRegister(uint8_t addr);
-  void setBitMask(uint8_t reg, uint8_t mask);
-  void clearBitMask(uint8_t reg, uint8_t mask);
+  void writeToRegister(byte addr, byte val);
+  byte readFromRegister(byte addr);
+  void setBitMask(byte addr, byte mask);
+  void clearBitMask(byte addr, byte mask);
   void begin();
   void reset();
-  uint8_t getFirmwareVersion();
-  uint8_t commandTag(uint8_t command, uint8_t *sendData, uint8_t sendLen, uint8_t *backData, uint8_t *backLen);
-  uint8_t requestTag(uint8_t mode, uint8_t *type);
-  uint8_t antiCollision(uint8_t *serial);
-  void calculateCRC(uint8_t *pIndata, uint8_t len, uint8_t *pOutData);
-  uint8_t selectTag(uint8_t *serial);
-  uint8_t authenticate(uint8_t mode, uint8_t block, uint8_t *key, uint8_t *serial);
-  uint8_t readFromTag(uint8_t blockAddr, uint8_t *recvData);
-  uint8_t writeToTag(uint8_t blockAddr, uint8_t *writeData);
+  byte getFirmwareVersion();
+  int commandTag(byte command, byte *data, int dlen, byte *result, int *rlen);
+  int requestTag(byte mode, byte *type);
+  int antiCollision(byte *serial);
+  void calculateCRC(byte *data, int len, byte *result);
+  byte selectTag(byte *serial);
+  int authenticate(byte mode, byte block, byte *key, byte *serial);
+  int readFromTag(byte blockAddr, byte *recvData);
+  int writeToTag(byte blockAddr, byte *writeData);
   void haltTag();
 
  private:
-  uint8_t _sad, _reset;
+  int _sad, _reset;
 };
