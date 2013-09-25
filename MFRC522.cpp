@@ -321,10 +321,10 @@ int MFRC522::antiCollision(byte *serial) {
   serial[0] = MF1_ANTICOLL;
   serial[1] = 0x20;
   status = commandTag(MFRC522_TRANSCEIVE, serial, 2, serial, &len);
-
+  len = len / 8; // len is in bits, and we want each byte.
   if (status == MI_OK) {
     // The checksum of the tag is the ^ of all the values.
-    for (i=0; i < (len/8)-1; i++) { // len is in bits, and we want each byte.
+    for (i = 0; i < len-1; i++) {
       check ^= serial[i];
     }
     // The checksum should be the same as the one provided from the
