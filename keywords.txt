@@ -15,7 +15,6 @@ getFirmwareVersion KEYWORD2
 begin KEYWORD2
 reset KEYWORD2
 writeToRegister KEYWORD2
-antennaOn KEYWORD2
 readFromRegister KEYWORD2
 setBitMask KEYWORD2
 clearBitMask KEYWORD2
