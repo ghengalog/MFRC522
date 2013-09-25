@@ -169,7 +169,7 @@ byte MFRC522::getFirmwareVersion() {
   @param   data    The data that is needed to complete the command.
   @param   dlen    The length of the data.
   @param   result  The result returned by the tag.
-  @param   rlen    The length of the resulting data.
+  @param   rlen    The number of valid bits in the resulting value.
 
   @returns Returns the status of the calculation.
            MI_ERR        if something went wrong,
@@ -324,7 +324,7 @@ int MFRC522::antiCollision(byte *serial) {
 
   if (status == MI_OK) {
     // The checksum of the tag is the ^ of all the values.
-    for (i=0; i<4; i++) {
+    for (i=0; i < (len/8)-1; i++) { // len is in bits, and we want each byte.
       check ^= serial[i];
     }
     // The checksum should be the same as the one provided from the
