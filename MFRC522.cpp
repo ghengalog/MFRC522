@@ -357,8 +357,8 @@ void MFRC522::calculateCRC(byte *data, int len, byte *result) {
   setBitMask(FIFOLevelReg, 0x80);			// Clear the FIFO pointer
 
   //Writing data to the FIFO.
-  for (i=0; i<len; i++) {
-    writeToRegister(FIFODataReg, *(data+i));
+  for (i = 0; i < len; i++) {
+    writeToRegister(FIFODataReg, data[i]);
   }
   writeToRegister(CommandReg, MFRC522_CALCCRC);
 
@@ -392,8 +392,8 @@ byte MFRC522::selectTag(byte *serial) {
 
   buffer[0] = MF1_SELECTTAG;
   buffer[1] = 0x70;
-  for (i=0; i<5; i++) {
-    buffer[i+2] = *(serial+i);
+  for (i = 0; i < 5; i++) {
+    buffer[i+2] = serial[i];
   }
   calculateCRC(buffer, 7, &buffer[7]);
 
@@ -432,11 +432,11 @@ int MFRC522::authenticate(byte mode, byte block, byte *key, byte *serial) {
   //Verify the command block address + sector + password + tag serial number
   buffer[0] = mode;
   buffer[1] = block;
-  for (i=0; i<6; i++) {
-    buffer[i+2] = *(key+i);
+  for (i = 0; i < 6; i++) {
+    buffer[i+2] = key[i];
   }
-  for (i=0; i<4; i++) {
-    buffer[i+8] = *(serial+i);
+  for (i = 0; i < 4; i++) {
+    buffer[i+8] = serial[i];
   }
 
   status = commandTag(MFRC522_AUTHENT, buffer, 12, buffer, &len);
@@ -505,8 +505,8 @@ int MFRC522::writeToTag(byte block, byte *data) {
   }
 
   if (status == MI_OK) {
-    for (i=0; i<16; i++) {
-      buffer[i] = *(data+i);
+    for (i = 0; i < 16; i++) {
+      buffer[i] = data[i];
     }
     calculateCRC(buffer, 16, &buffer[16]);
     status = commandTag(MFRC522_TRANSCEIVE, buffer, 18, buffer, &len);
