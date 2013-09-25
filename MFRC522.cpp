@@ -367,7 +367,7 @@ void MFRC522::calculateCRC(byte *data, int len, byte *result) {
   do {
     n = readFromRegister(DivIrqReg);
     i--;
-  } while ((i!=0) && !(n&0x04));			//CRCIrq = 1
+  } while ((i != 0) && !(n & 0x04));			//CRCIrq = 1
 
   // Read the result from the CRC calculation.
   result[0] = readFromRegister(CRCResultRegL);
