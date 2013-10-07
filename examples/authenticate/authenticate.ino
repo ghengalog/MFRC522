@@ -13,7 +13,7 @@ void setup() {
   Serial.println("Looking for MFRC522.");
   nfc.begin();
 
-  uint8_t version = nfc.getFirmwareVersion();
+  byte version = nfc.getFirmwareVersion();
   if (! version) {
     Serial.print("Didn't find MFRC522 board.");
     while(1); //halt
@@ -25,14 +25,14 @@ void setup() {
   Serial.println(".");
 }
 
-uint8_t keyA[6] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, };
-uint8_t keyB[6] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, };
+byte keyA[6] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, };
+byte keyB[6] = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, };
 
 void loop() {
-  uint8_t status;
-  uint8_t data[MAX_LEN];
-  uint8_t serial[5];
-  uint8_t i, j;
+  byte status;
+  byte data[MAX_LEN];
+  byte serial[5];
+  int i, j, pos;
 
   status = nfc.requestTag(MF1_REQIDL, data);
 
@@ -40,6 +40,7 @@ void loop() {
     Serial.println("Tag detected.");
     Serial.print("Type: ");
     Serial.print(data[0], HEX);
+    Serial.print(", ");
     Serial.println(data[1], HEX);
 
     status = nfc.antiCollision(data);
