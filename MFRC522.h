@@ -93,7 +93,7 @@
 #define     Reserved22            0x25
 #define     RFCfgReg              0x26
 #define     GsNReg                0x27
-#define     CWGsPReg	          0x28
+#define     CWGsPReg              0x28
 #define     ModGsPReg             0x29
 #define     TModeReg              0x2A
 #define     TPrescalerReg         0x2B
@@ -117,7 +117,7 @@
 #define     Reserved31            0x3C
 #define     Reserved32            0x3D
 #define     Reserved33            0x3E
-#define     Reserved34	      	  0x3F
+#define     Reserved34            0x3F
 //-----------------------------------------------
 
 class MFRC522 {
