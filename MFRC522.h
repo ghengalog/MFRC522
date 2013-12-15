@@ -130,6 +130,7 @@ class MFRC522 {
   void begin();
   void reset();
   byte getFirmwareVersion();
+  boolean digitalSelfTestPass();
   int commandTag(byte command, byte *data, int dlen, byte *result, int *rlen);
   int requestTag(byte mode, byte *type);
   int antiCollision(byte *serial);
