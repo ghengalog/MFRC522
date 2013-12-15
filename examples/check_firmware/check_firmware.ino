@@ -23,6 +23,12 @@ void setup() {
   Serial.print("Firmware ver. 0x");
   Serial.print(version, HEX);
   Serial.println(".");
+  
+  if (nfc.digitalSelfTestPass()) {
+      Serial.print("Digital self test by MFRC522 passed.");
+  } else {
+      Serial.print("Digital self test by MFRC522 failed.");
+  }
 }
 
 void loop() {
