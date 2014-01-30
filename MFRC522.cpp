@@ -29,7 +29,7 @@
 MFRC522::MFRC522(int sad, int reset) {
   _sad = sad;
   pinMode(_sad, OUTPUT);         // Set digital as OUTPUT to connect it to the RFID /ENABLE pin
-  digitalWrite(_sad, LOW);
+  digitalWrite(_sad, HIGH);
 
 
   _reset = reset;
