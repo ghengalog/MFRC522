@@ -17,6 +17,7 @@ reset KEYWORD2
 writeToRegister KEYWORD2
 readFromRegister KEYWORD2
 setBitMask KEYWORD2
+digitalSelfTestPass KEYWORD2
 clearBitMask KEYWORD2
 calculateCRC KEYWORD2
 requestTag KEYWORD2
