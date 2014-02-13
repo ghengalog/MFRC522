@@ -123,15 +123,15 @@ void MFRC522::begin() {
   reset();
 
   //Timer: TPrescaler*TreloadVal/6.78MHz = 24ms
-  writeToRegister(TModeReg, 0x8D);		// Tauto=1; f(Timer) = 6.78MHz/TPreScaler
-  writeToRegister(TPrescalerReg, 0x3E);         // TModeReg[3..0] + TPrescalerReg
+  writeToRegister(TModeReg, 0x8D);		         // Tauto=1; f(Timer) = 6.78MHz/TPreScaler
+  writeToRegister(TPrescalerReg, 0x3E);          // TModeReg[3..0] + TPrescalerReg
   writeToRegister(TReloadRegL, 30);
   writeToRegister(TReloadRegH, 0);
 
-  writeToRegister(TxAutoReg, 0x40);	        // 100%ASK
-  writeToRegister(ModeReg, 0x3D);		// CRC initial value 0x6363
+  writeToRegister(TxAutoReg, 0x40);	             // 100%ASK
+  writeToRegister(ModeReg, 0x3D);		         // CRC initial value 0x6363
 
-  setBitMask(TxControlReg, 0x03);               // Turn antenna on.
+  setBitMask(TxControlReg, 0x03);                // Turn antenna on.
 }
 
 /**************************************************************************/
@@ -262,11 +262,11 @@ int MFRC522::commandTag(byte cmd, byte *data, int dlen, byte *result, int *rlen)
     break;
   }
 
-  writeToRegister(CommIEnReg, irqEn|0x80);	// interrupt request
-  clearBitMask(CommIrqReg, 0x80);               // Clear all interrupt requests bits.
-  setBitMask(FIFOLevelReg, 0x80);               // FlushBuffer=1, FIFO initialization.
+  writeToRegister(CommIEnReg, irqEn|0x80);	  // interrupt request
+  clearBitMask(CommIrqReg, 0x80);             // Clear all interrupt requests bits.
+  setBitMask(FIFOLevelReg, 0x80);             // FlushBuffer=1, FIFO initialization.
 
-  writeToRegister(CommandReg, MFRC522_IDLE);	// No action, cancel the current command.
+  writeToRegister(CommandReg, MFRC522_IDLE);  // No action, cancel the current command.
 
   // Write to FIFO
   for (i=0; i < dlen; i++) {
@@ -276,7 +276,7 @@ int MFRC522::commandTag(byte cmd, byte *data, int dlen, byte *result, int *rlen)
   // Execute the command.
   writeToRegister(CommandReg, cmd);
   if (cmd == MFRC522_TRANSCEIVE) {
-    setBitMask(BitFramingReg, 0x80);		// StartSend=1, transmission of data starts
+    setBitMask(BitFramingReg, 0x80);		  // StartSend=1, transmission of data starts
   }
 
   // Waiting for the command to complete so we can receive data.
@@ -289,10 +289,10 @@ int MFRC522::commandTag(byte cmd, byte *data, int dlen, byte *result, int *rlen)
     i--;
   } while ((i!=0) && !(n&0x01) && !(n&waitIRq));
 
-  clearBitMask(BitFramingReg, 0x80);	         // StartSend=0
+  clearBitMask(BitFramingReg, 0x80);	        // StartSend=0
 
   if (i != 0) { // Request did not time out.
-    if(!(readFromRegister(ErrorReg) & 0x1B)) {   // BufferOvfl Collerr CRCErr ProtocolErr
+    if(!(readFromRegister(ErrorReg) & 0x1B)) {  // BufferOvfl Collerr CRCErr ProtocolErr
       status = MI_OK;
       if (n & irqEn & 0x01) {
         status = MI_NOTAGERR;
@@ -431,7 +431,7 @@ void MFRC522::calculateCRC(byte *data, int len, byte *result) {
   do {
     n = readFromRegister(DivIrqReg);
     i--;
-  } while ((i != 0) && !(n & 0x04));			//CRCIrq = 1
+  } while ((i != 0) && !(n & 0x04));		//CRCIrq = 1
 
   // Read the result from the CRC calculation.
   result[0] = readFromRegister(CRCResultRegL);
@@ -494,12 +494,12 @@ int MFRC522::authenticate(byte mode, byte block, byte *key, byte *serial) {
   byte buffer[12];
 
   //Verify the command block address + sector + password + tag serial number
-  buffer[0] = mode;
-  buffer[1] = block;
-  for (i = 0; i < 6; i++) {
+  buffer[0] = mode;          // 0th byte is the mode
+  buffer[1] = block;         // 1st byte is the block to address.
+  for (i = 0; i < 6; i++) {  // 2nd to 7th byte is the authentication key.
     buffer[i+2] = key[i];
   }
-  for (i = 0; i < 4; i++) {
+  for (i = 0; i < 4; i++) {  // 8th to 11th byte is the serial of the tag.
     buffer[i+8] = serial[i];
   }
 
