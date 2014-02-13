@@ -34,7 +34,7 @@ MFRC522::MFRC522(int sad, int reset) {
 
   _reset = reset;
   pinMode(_reset, OUTPUT);       // Set digital pin, Not Reset and Power-Down
-  digitalWrite(_reset, HIGH);
+  digitalWrite(_reset, LOW);
 
 }
 
