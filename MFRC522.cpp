@@ -31,11 +31,9 @@ MFRC522::MFRC522(int sad, int reset) {
   pinMode(_sad, OUTPUT);         // Set digital as OUTPUT to connect it to the RFID /ENABLE pin
   digitalWrite(_sad, HIGH);
 
-
   _reset = reset;
   pinMode(_reset, OUTPUT);       // Set digital pin, Not Reset and Power-Down
   digitalWrite(_reset, LOW);
-
 }
 
 /**************************************************************************/
@@ -588,9 +586,12 @@ int MFRC522::writeToTag(byte block, byte *data) {
 
   @brief   Sends a halt command to the current tag.
 
+  @returns Returns the result of the halt.
+           MI_ERR        If the command didn't complete properly.
+           MI_OK         If the command completed.
  */
 /**************************************************************************/
-void MFRC522::haltTag() {
+int MFRC522::haltTag() {
   int status, len;
   byte buffer[4];
 
@@ -599,4 +600,6 @@ void MFRC522::haltTag() {
   calculateCRC(buffer, 2, &buffer[2]);
   clearBitMask(Status2Reg, 0x08); // turn off encryption
   status = commandTag(MFRC522_TRANSCEIVE, buffer, 4, buffer, &len);
+
+  return status;
 }
