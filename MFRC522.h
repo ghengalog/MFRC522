@@ -139,7 +139,7 @@ class MFRC522 {
   int authenticate(byte mode, byte block, byte *key, byte *serial);
   int readFromTag(byte blockAddr, byte *recvData);
   int writeToTag(byte blockAddr, byte *writeData);
-  void haltTag();
+  int haltTag();
 
  private:
   int _sad, _reset;
