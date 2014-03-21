@@ -54,7 +54,7 @@
 #define     Reserved00            0x00
 #define     CommandReg            0x01
 #define     CommIEnReg            0x02
-#define     DivlEnReg             0x03
+#define     DivIEnReg             0x03
 #define     CommIrqReg            0x04
 #define     DivIrqReg             0x05
 #define     ErrorReg              0x06
