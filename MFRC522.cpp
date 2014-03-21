@@ -28,11 +28,11 @@
 /**************************************************************************/
 MFRC522::MFRC522(int sad, int reset) {
   _sad = sad;
-  pinMode(_sad, OUTPUT);         // Set digital as OUTPUT to connect it to the RFID /ENABLE pin
+  pinMode(_sad, OUTPUT);       // Set digital as OUTPUT to connect it to the RFID /ENABLE pin
   digitalWrite(_sad, HIGH);
 
   _reset = reset;
-  pinMode(_reset, OUTPUT);       // Set digital pin, Not Reset and Power-Down
+  pinMode(_reset, OUTPUT);     // Set digital pin, Not Reset and Power-Down
   digitalWrite(_reset, LOW);
 }
 
@@ -121,15 +121,15 @@ void MFRC522::begin() {
   reset();
 
   //Timer: TPrescaler*TreloadVal/6.78MHz = 24ms
-  writeToRegister(TModeReg, 0x8D);		         // Tauto=1; f(Timer) = 6.78MHz/TPreScaler
-  writeToRegister(TPrescalerReg, 0x3E);          // TModeReg[3..0] + TPrescalerReg
+  writeToRegister(TModeReg, 0x8D);       // Tauto=1; f(Timer) = 6.78MHz/TPreScaler
+  writeToRegister(TPrescalerReg, 0x3E);  // TModeReg[3..0] + TPrescalerReg
   writeToRegister(TReloadRegL, 30);
   writeToRegister(TReloadRegH, 0);
 
-  writeToRegister(TxAutoReg, 0x40);	             // 100%ASK
-  writeToRegister(ModeReg, 0x3D);		         // CRC initial value 0x6363
+  writeToRegister(TxAutoReg, 0x40);      // 100%ASK
+  writeToRegister(ModeReg, 0x3D);        // CRC initial value 0x6363
 
-  setBitMask(TxControlReg, 0x03);                // Turn antenna on.
+  setBitMask(TxControlReg, 0x03);        // Turn antenna on.
 }
 
 /**************************************************************************/
@@ -260,7 +260,7 @@ int MFRC522::commandTag(byte cmd, byte *data, int dlen, byte *result, int *rlen)
     break;
   }
 
-  writeToRegister(CommIEnReg, irqEn|0x80);	  // interrupt request
+  writeToRegister(CommIEnReg, irqEn|0x80);    // interrupt request
   clearBitMask(CommIrqReg, 0x80);             // Clear all interrupt requests bits.
   setBitMask(FIFOLevelReg, 0x80);             // FlushBuffer=1, FIFO initialization.
 
@@ -274,7 +274,7 @@ int MFRC522::commandTag(byte cmd, byte *data, int dlen, byte *result, int *rlen)
   // Execute the command.
   writeToRegister(CommandReg, cmd);
   if (cmd == MFRC522_TRANSCEIVE) {
-    setBitMask(BitFramingReg, 0x80);		  // StartSend=1, transmission of data starts
+    setBitMask(BitFramingReg, 0x80);  // StartSend=1, transmission of data starts
   }
 
   // Waiting for the command to complete so we can receive data.
@@ -287,7 +287,7 @@ int MFRC522::commandTag(byte cmd, byte *data, int dlen, byte *result, int *rlen)
     i--;
   } while ((i!=0) && !(n&0x01) && !(n&waitIRq));
 
-  clearBitMask(BitFramingReg, 0x80);	        // StartSend=0
+  clearBitMask(BitFramingReg, 0x80);  // StartSend=0
 
   if (i != 0) { // Request did not time out.
     if(!(readFromRegister(ErrorReg) & 0x1B)) {  // BufferOvfl Collerr CRCErr ProtocolErr
@@ -378,7 +378,7 @@ int MFRC522::antiCollision(byte *serial) {
   int status, i, len;
   byte check = 0x00;
 
-  writeToRegister(BitFramingReg, 0x00);	     // TxLastBits = BitFramingReg[2..0]
+  writeToRegister(BitFramingReg, 0x00);  // TxLastBits = BitFramingReg[2..0]
 
   serial[0] = MF1_ANTICOLL;
   serial[1] = 0x20;
@@ -415,8 +415,8 @@ void MFRC522::calculateCRC(byte *data, int len, byte *result) {
   int i;
   byte n;
 
-  clearBitMask(DivIrqReg, 0x04);			// CRCIrq = 0
-  setBitMask(FIFOLevelReg, 0x80);			// Clear the FIFO pointer
+  clearBitMask(DivIrqReg, 0x04);   // CRCIrq = 0
+  setBitMask(FIFOLevelReg, 0x80);  // Clear the FIFO pointer
 
   //Writing data to the FIFO.
   for (i = 0; i < len; i++) {
@@ -429,7 +429,7 @@ void MFRC522::calculateCRC(byte *data, int len, byte *result) {
   do {
     n = readFromRegister(DivIrqReg);
     i--;
-  } while ((i != 0) && !(n & 0x04));		//CRCIrq = 1
+  } while ((i != 0) && !(n & 0x04));  //CRCIrq = 1
 
   // Read the result from the CRC calculation.
   result[0] = readFromRegister(CRCResultRegL);
@@ -598,7 +598,7 @@ int MFRC522::haltTag() {
   buffer[0] = MF1_HALT;
   buffer[1] = 0;
   calculateCRC(buffer, 2, &buffer[2]);
-  clearBitMask(Status2Reg, 0x08); // turn off encryption
+  clearBitMask(Status2Reg, 0x08);  // turn off encryption
   status = commandTag(MFRC522_TRANSCEIVE, buffer, 4, buffer, &len);
 
   return status;
