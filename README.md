@@ -6,7 +6,7 @@ MFRC522 doesn't have pin markings like the B2CQSHOP one):
 
 | Pins | SPI      | UNO  | Mega2560 | Leonardo |
 | ---- |:--------:|:----:|:--------:|:--------:|
-| 1    | SAD (SS) |  10  |  53      | 10       |
+| 1    | SDA (SS) |  10  |  53      | 10       |
 | 2    | SCK      |  13  |  52      | SCK`1`   |
 | 3    | MOSI     |  11  |  51      | MOSI`1`  |
 | 4    | MISO     |  12  |  50      | MISO`1`  |
