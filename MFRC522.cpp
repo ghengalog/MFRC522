@@ -291,7 +291,7 @@ int MFRC522::commandTag(byte cmd, byte *data, int dlen, byte *result, int *rlen)
   clearBitMask(BitFramingReg, 0x80);  // StartSend=0
 
   if (i != 0) { // Request did not time out.
-    if(!(readFromRegister(ErrorReg) & 0x1B)) {  // BufferOvfl Collerr CRCErr ProtocolErr
+    if(!(readFromRegister(ErrorReg) & 0x1D)) {  // BufferOvfl Collerr CRCErr ProtocolErr
       status = MI_OK;
       if (n & irqEn & 0x01) {
         status = MI_NOTAGERR;
